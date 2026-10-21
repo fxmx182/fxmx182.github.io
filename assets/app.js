@@ -1,5 +1,8 @@
-// Site da LibertyX: uma página só, com rotas no endereço (#/player/baixar).
-// O conteúdo mora em produtos.js; aqui só se desenha.
+// Site da LibertyX: uma página só, com rotas no endereço (#/pt/player/baixar,
+// #/en/player/download). O conteúdo mora em produtos.js; aqui só se desenha.
+//
+// O idioma vem do endereço; sem ele, da última escolha; sem ela, do navegador
+// (português para quem usa português, inglês para o resto).
 
 (() => {
   "use strict";
@@ -8,21 +11,147 @@
   const PRODUTOS = window.PRODUTOS;
   const LOJA = window.LOJA;
   const GH = "https://github.com/fxmx182";
+  const IDIOMAS = ["pt", "en"];
 
-  const ABAS = [
-    ["visao", "Visão geral"],
-    ["recursos", "Recursos"],
-    ["specs", "Especificações"],
-    ["baixar", "Baixar"],
-    ["preco", "Preço"],
-  ];
+  // ---------- textos da interface ----------
 
-  const LOJAS = {
-    play: { icone: "play", pre: "Google Play", nome: "Google Play" },
-    amazon: { icone: "amazon", pre: "Amazon Appstore", nome: "Amazon Appstore" },
-    appstore: { icone: "apple", pre: "App Store", nome: "App Store" },
-    cartao: { icone: "cartao", pre: "Loja com cartão", nome: "Cartão de crédito" },
+  const U = {
+    pt: {
+      htmlLang: "pt-BR", locale: "pt-BR", moeda: "US$", moedaTexto: (n) => `US$ ${n}`,
+      tituloInicio: "LibertyX — apps sem anúncio, sem conta",
+      descricao: "LibertyX Player, Folder e Partition — apps independentes, sem anúncio e sem conta, para Android, TV e Windows.",
+      navApps: "Apps", navComprar: "Como comprar", navLoja: "Loja", idioma: "Idioma",
+      abas: { visao: "Visão geral", recursos: "Recursos", specs: "Especificações", baixar: "Baixar", preco: "Preço" },
+      slugs: { visao: "visao", recursos: "recursos", specs: "specs", baixar: "baixar", preco: "preco", comprar: "comprar" },
+      familia: "Família LibertyX",
+      heroiTitulo: "Software que é <em>seu</em>.",
+      heroiTexto: "Um player que abre tudo, um gerenciador de arquivos feito para a TV e uma ferramenta que devolve os dados do seu disco. Independentes, bonitos e sem amarras.",
+      conhecer: "Conhecer os apps", codigoGithub: "Código no GitHub",
+      principios: ["Sem anúncios", "Sem conta", "Sem rastreamento", "Compra única"],
+      osApps: "Os apps", appsTitulo: "Feitos com <em>capricho</em>, um por um.",
+      appsTexto: "Cada app tem a sua página com recursos, especificações, downloads e as lojas onde ele estiver.",
+      disponivel: "Disponível", emBreve: "Em breve", aberto: "Aberto",
+      pacoteRotulo: "Pacote completo", pacoteTitulo: "Uma chave. <em>Todos os apps.</em>",
+      pacoteTexto: "Player Pro, Folder Pro e Partition Premium numa chave só, ativada em cada app sem internet.",
+      pacoteEmVez: (n) => `em vez de US$ ${n} · vitalício`, pacoteComprar: "Comprar o pacote",
+      comprarRotulo: "Como comprar", comprarTitulo: "O mesmo app. <em>Três jeitos</em> de pagar.",
+      comprarTexto: "Tudo é grátis para começar, e o Pro vem com teste. Muda só por onde você instala — e, com isso, como paga o Pro.",
+      canalTg: ["APK + chave pelo Telegram", "Baixe o APK direto daqui e compre o Pro com Bitcoin ou USDT no bot da loja. A chave chega na hora.",
+        ["Lightning, on-chain, USDT e USDC", "Funciona sem internet depois de ativada", "Na TV, a chave é colada pelo celular"]],
+      abrirLoja: "Abrir a loja",
+      canalPlay: ["Google Play", "Para celular e Google TV. O Pro é comprado dentro do app, pela cobrança da Play.",
+        ["Cartão, saldo Google e o que a Play aceitar", "7 dias com tudo liberado", "Atualiza sozinho pela loja"]],
+      canalAmazon: ["Amazon Appstore", "Para o Fire TV. O Pro é comprado dentro do app, pela conta Amazon.",
+        ["Cobrança da Amazon, sem cadastro extra", "7 dias com tudo liberado", "Fire TV Stick, Cube e TVs Fire"]],
+      notaCompra: "<b>A compra fica onde foi feita.</b> A Play não enxerga o que foi pago na Amazon, e a chave do Telegram vale no APK baixado daqui e no Partition — as lojas não permitem outro meio de pagamento dentro delas.",
+      todosApps: "Todos os apps", baixarGratis: "Baixar grátis", secoesDo: (t) => `Seções do ${t}`, tambem: "Também da LibertyX",
+      recursosTitulo: "O que ele faz",
+      specsTitulo: "Especificações", specsTexto: "Onde roda, o que abre e como foi feito.",
+      baixarTitulo: "Baixar", baixarTexto: "Sempre a versão mais recente, direto do GitHub, assinada com a mesma chave — uma atualiza por cima da outra.",
+      recomendado: "Recomendado", lojas: "Lojas",
+      chaveTg: ["Aberto · Bitcoin e USDT", "Chave no Telegram"],
+      versao: (num, data) => `${num ? `Versão <b>${num}</b> · ` : ""}atualizado em <b>${data}</b>`, historico: "histórico",
+      instalarTitulo: "Instalar na TV",
+      instalarTexto: "Google TV e Fire TV instalam o APK pelo app <b>Downloader</b>, que está na loja das duas. É feito uma vez; depois o app atualiza por cima.",
+      copiar: "Copiar", copiado: "Copiado",
+      passos: [
+        "Instale o <b>Downloader</b> pela loja da TV.",
+        "Libere a instalação: <b>Fire TV</b> — Configurações › Minha Fire TV › Opções do desenvolvedor › Instalar apps desconhecidos. <b>Google TV</b> — Configurações › Sistema › Sobre, clique 7 vezes em “Versão”, depois Apps › Segurança › Apps desconhecidos.",
+        "No Downloader, digite o endereço deste quadro e confirme a instalação.",
+        "Para o Pro: na tela do Pro escolha <b>Tenho uma chave</b> e cole a chave pelo celular no endereço que a TV mostrar.",
+      ],
+      nomesPlano: ["Grátis", "Pro"],
+      planosTitulo: (a, b) => `${a} e ${b}`,
+      planosTexto: (b) => `Sem assinatura: o ${b} é uma compra única e fica para sempre.`,
+      paraSempre: "para sempre", tudoDo: (a) => `Tudo do ${a}`, comprarCripto: "Comprar com Bitcoin ou USDT",
+      notaPartition: "<b>A chave chega na hora pelo Telegram</b> e é conferida no próprio PC, sem internet. O pagamento com cartão abre em breve.",
+      notaApps: "<b>Pelo APK daqui</b>, o Pro se compra com a chave do Telegram. <b>Na Google Play e na Amazon</b>, quando abrirem, o Pro é comprado dentro do app, pela própria loja.",
+      notaPacote: (url, preco) => `Quer todos os apps? O <a href="${url}" target="_blank" rel="noopener" style="color:var(--ouro)">pacote completo</a> sai por ${preco}.`,
+      ampliar: "Ampliar", fechar: "Fechar", anterior: "Anterior", proxima: "Próxima",
+      lojasNome: { play: "Google Play", amazon: "Amazon Appstore", appstore: "App Store", cartao: "Cartão de crédito" },
+      rodape: {
+        lema: "Apps independentes. Sem anúncio, sem conta, sem rastreamento.",
+        apps: "Apps", loja: "Loja", codigo: "Código", comprar: "Como comprar", pacote: "Pacote completo",
+        privPlayer: "Privacidade — Player", privFolder: "Privacidade — Folder", feito: "feito à mão por",
+      },
+    },
+
+    en: {
+      htmlLang: "en", locale: "en-US", moeda: "$", moedaTexto: (n) => `$${n}`,
+      tituloInicio: "LibertyX — no ads, no account",
+      descricao: "LibertyX Player, Folder and Partition — independent apps with no ads and no account, for Android, TV and Windows.",
+      navApps: "Apps", navComprar: "How to buy", navLoja: "Store", idioma: "Language",
+      abas: { visao: "Overview", recursos: "Features", specs: "Specs", baixar: "Download", preco: "Pricing" },
+      slugs: { visao: "overview", recursos: "features", specs: "specs", baixar: "download", preco: "pricing", comprar: "buy" },
+      familia: "The LibertyX family",
+      heroiTitulo: "Software that's <em>yours</em>.",
+      heroiTexto: "A player that opens everything, a file manager built for TV and a tool that gets your disk's data back. Independent, beautiful and with no strings attached.",
+      conhecer: "Meet the apps", codigoGithub: "Source on GitHub",
+      principios: ["No ads", "No account", "No tracking", "One-time purchase"],
+      osApps: "The apps", appsTitulo: "Crafted with <em>care</em>, one by one.",
+      appsTexto: "Every app has its own page with features, specs, downloads and the stores where you can find it.",
+      disponivel: "Available", emBreve: "Coming soon", aberto: "Open",
+      pacoteRotulo: "Complete bundle", pacoteTitulo: "One key. <em>Every app.</em>",
+      pacoteTexto: "Player Pro, Folder Pro and Partition Premium in a single key, activated in each app offline.",
+      pacoteEmVez: (n) => `instead of $${n} · lifetime`, pacoteComprar: "Buy the bundle",
+      comprarRotulo: "How to buy", comprarTitulo: "Same app. <em>Three ways</em> to pay.",
+      comprarTexto: "Everything is free to start, and Pro comes with a trial. The only difference is where you install from — and therefore how you pay for Pro.",
+      canalTg: ["APK + key via Telegram", "Download the APK right here and buy Pro with Bitcoin or USDT from the store bot. Your key arrives instantly.",
+        ["Lightning, on-chain, USDT and USDC", "Works offline once activated", "On TV, paste the key from your phone"]],
+      abrirLoja: "Open the store",
+      canalPlay: ["Google Play", "For phones and Google TV. Pro is bought inside the app, through Google Play billing.",
+        ["Card, Google balance and anything Play accepts", "7-day free trial", "Updates automatically from the store"]],
+      canalAmazon: ["Amazon Appstore", "For Fire TV. Pro is bought inside the app, with your Amazon account.",
+        ["Amazon billing, no extra sign-up", "7-day free trial", "Fire TV Stick, Cube and Fire TVs"]],
+      notaCompra: "<b>Purchases stay where they were made.</b> Google Play can't see what was paid on Amazon, and the Telegram key works in the APK downloaded here and in Partition — the stores don't allow other payment methods inside them.",
+      todosApps: "All apps", baixarGratis: "Download free", secoesDo: (t) => `${t} sections`, tambem: "More from LibertyX",
+      recursosTitulo: "What it does",
+      specsTitulo: "Specifications", specsTexto: "Where it runs, what it opens and how it's built.",
+      baixarTitulo: "Download", baixarTexto: "Always the latest version, straight from GitHub, signed with the same key — each one updates over the last.",
+      recomendado: "Recommended", lojas: "Stores",
+      chaveTg: ["Open · Bitcoin and USDT", "Key via Telegram"],
+      versao: (num, data) => `${num ? `Version <b>${num}</b> · ` : ""}updated <b>${data}</b>`, historico: "history",
+      instalarTitulo: "Install on your TV",
+      instalarTexto: "Google TV and Fire TV install the APK through the <b>Downloader</b> app, available in both stores. You do it once; after that the app updates over itself.",
+      copiar: "Copy", copiado: "Copied",
+      passos: [
+        "Install <b>Downloader</b> from your TV's store.",
+        "Allow installs: <b>Fire TV</b> — Settings › My Fire TV › Developer options › Install unknown apps. <b>Google TV</b> — Settings › System › About, click “Version” 7 times, then Apps › Security › Unknown sources.",
+        "In Downloader, type the address in this box and confirm the install.",
+        "For Pro: on the Pro screen choose <b>I have a key</b> and paste it from your phone at the address the TV shows.",
+      ],
+      nomesPlano: ["Free", "Pro"],
+      planosTitulo: (a, b) => `${a} and ${b}`,
+      planosTexto: (b) => `No subscription: ${b} is a one-time purchase that's yours forever.`,
+      paraSempre: "forever", tudoDo: (a) => `Everything in ${a}`, comprarCripto: "Buy with Bitcoin or USDT",
+      notaPartition: "<b>Your key arrives instantly via Telegram</b> and is checked on your own PC, offline. Card payments are coming soon.",
+      notaApps: "<b>With the APK from here</b>, Pro is bought with a Telegram key. <b>On Google Play and Amazon</b>, once they open, Pro is bought inside the app, through the store itself.",
+      notaPacote: (url, preco) => `Want every app? The <a href="${url}" target="_blank" rel="noopener" style="color:var(--ouro)">complete bundle</a> is ${preco}.`,
+      ampliar: "Enlarge", fechar: "Close", anterior: "Previous", proxima: "Next",
+      lojasNome: { play: "Google Play", amazon: "Amazon Appstore", appstore: "App Store", cartao: "Credit card" },
+      rodape: {
+        lema: "Independent apps. No ads, no account, no tracking.",
+        apps: "Apps", loja: "Store", codigo: "Source", comprar: "How to buy", pacote: "Complete bundle",
+        privPlayer: "Privacy — Player", privFolder: "Privacy — Folder", feito: "handmade by",
+      },
+    },
   };
+
+  const ABAS = ["visao", "recursos", "specs", "baixar", "preco"];
+  const LOJA_ICONE = { play: "play", amazon: "amazon", appstore: "apple", cartao: "cartao" };
+
+  // ---------- idioma ----------
+
+  const salvo = (() => { try { return localStorage.getItem("lx-lang"); } catch (_) { return null; } })();
+  let lang = IDIOMAS.includes(salvo) ? salvo : (navigator.language || "").toLowerCase().startsWith("pt") ? "pt" : "en";
+  let L = U[lang];
+
+  // texto que muda de idioma é { pt, en }; o resto passa direto
+  const t = (v) => (v && typeof v === "object" && !Array.isArray(v) && ("pt" in v || "en" in v) ? v[lang] ?? v.pt : v);
+  const link = (caminho = "") => `#/${lang}${caminho ? "/" + caminho : "/"}`;
+  const linkAba = (id, aba) => link(`${id}/${L.slugs[aba]}`);
+  // aceita a aba escrita em qualquer idioma (um link em português aberto em inglês ainda funciona)
+  const abaDoSlug = (s) => ABAS.find((k) => IDIOMAS.some((i) => U[i].slugs[k] === s));
 
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ic = (nome, cls = "i") => `<svg class="${cls}" aria-hidden="true"><use href="#i-${nome}"/></svg>`;
@@ -44,9 +173,9 @@
     if (cacheRelease.has(p.repo)) return cacheRelease.get(p.repo);
     const chave = `lx-rel-${p.repo}`;
     try {
-      const salvo = JSON.parse(sessionStorage.getItem(chave) || "null");
-      if (salvo && Date.now() - salvo.t < 30 * 60 * 1000) {
-        const pr = Promise.resolve(salvo.d);
+      const s = JSON.parse(sessionStorage.getItem(chave) || "null");
+      if (s && Date.now() - s.t < 30 * 60 * 1000) {
+        const pr = Promise.resolve(s.d);
         cacheRelease.set(p.repo, pr);
         return pr;
       }
@@ -73,25 +202,48 @@
 
   const tamanho = (b) => {
     const mb = b / 1048576;
-    return (mb < 10 ? mb.toFixed(1) : Math.round(mb)).toString().replace(".", ",") + " MB";
+    return (mb < 10 ? mb.toFixed(1) : String(Math.round(mb))).replace(".", lang === "pt" ? "," : ".") + " MB";
   };
+  const tamanhoFixo = (s) => (lang === "pt" ? s : s.replace(",", "."));
   const dataBonita = (iso) =>
-    new Date(iso).toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" }).replace(".", "");
+    new Date(iso).toLocaleDateString(L.locale, { day: "numeric", month: "short", year: "numeric" }).replace(".", "");
 
   function aplicarRelease(p) {
     release(p).then((d) => {
       if (!d) return;
-      document.querySelectorAll(`[data-arquivo]`).forEach((el) => {
-        const t = d.assets[el.dataset.arquivo];
-        if (t) el.textContent = tamanho(t);
+      document.querySelectorAll("[data-arquivo]").forEach((el) => {
+        const n = d.assets[el.dataset.arquivo];
+        if (n) el.textContent = tamanho(n);
       });
       const v = document.querySelector(`[data-versao="${p.id}"]`);
       if (v) {
         const num = (d.tag.match(/^v?(\d+\.\d+(?:\.\d+)?)/) || [])[1];
-        v.innerHTML = `${ic("ok")} ${num ? `Versão <b>${esc(num)}</b> · ` : ""}atualizado em <b>${esc(dataBonita(d.data))}</b> · <a href="${GH}/${p.repo}/releases" ${externo}>histórico</a>`;
+        v.innerHTML = `${ic("ok")} ${L.versao(num && esc(num), esc(dataBonita(d.data)))} · <a href="${GH}/${p.repo}/releases" ${externo}>${L.historico}</a>`;
         v.hidden = false;
       }
     });
+  }
+
+  // ---------- partes fixas da página (topo, rodapé, lupa) ----------
+
+  function traduzirMoldura() {
+    document.documentElement.lang = L.htmlLang;
+    document.querySelector('meta[name="description"]').content = L.descricao;
+    document.querySelectorAll("[data-t]").forEach((el) => {
+      const [grupo, chave] = el.dataset.t.split(".");
+      el.textContent = chave ? L[grupo][chave] : L[grupo];
+    });
+    document.querySelectorAll("[data-link]").forEach((el) => {
+      const [id, aba] = el.dataset.link.split("/");
+      el.href = id === "comprar" ? link(L.slugs.comprar) : aba ? linkAba(id, aba) : link(id);
+    });
+    document.querySelectorAll("[data-pacote]").forEach((el) => (el.href = LOJA.pacote.url));
+    document.querySelectorAll(".idioma button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+    document.querySelector(".idioma").setAttribute("aria-label", L.idioma);
+    const lp = document.getElementById("lupa");
+    lp.querySelector(".lupa-fechar").setAttribute("aria-label", L.fechar);
+    lp.querySelector(".lupa-ant").setAttribute("aria-label", L.anterior);
+    lp.querySelector(".lupa-prox").setAttribute("aria-label", L.proxima);
   }
 
   // ---------- pedaços ----------
@@ -114,59 +266,41 @@
     </div>`;
 
   const cartao = (p) => `
-    <a class="cartao surge" href="#/${p.id}">
+    <a class="cartao surge" href="${link(p.id)}">
       <div class="cartao-topo">
         <img class="cartao-icone" src="${p.icone}" alt="" width="68" height="68">
-        <span class="selo selo-ok">Disponível</span>
+        <span class="selo selo-ok">${L.disponivel}</span>
       </div>
       <div class="cartao-corpo">
         <span class="rotulo">${esc(p.plataformas.join(" · "))}</span>
         <h3><span>LibertyX</span> ${esc(p.nome)}</h3>
-        <p>${esc(p.resumo)}</p>
+        <p>${esc(t(p.resumo))}</p>
       </div>
-      <div class="cartao-tela"><img src="${p.capa || p.destaque}" alt=""></div>
+      <div class="cartao-tela"><img src="${t(p.capa || p.destaque)}" alt=""></div>
       <span class="cartao-ir">${ic("seta")}</span>
     </a>`;
 
+  const canal = (icone, [titulo, texto, itens], aberto, extra = "") => `
+    <article class="canal vidro surge${aberto ? " canal-destaque" : ""}">
+      <div class="canal-cabeca"><span class="canal-icone">${ic(icone)}</span>
+        <span class="selo ${aberto ? "selo-ok" : "selo-breve"}">${aberto ? L.aberto : L.emBreve}</span></div>
+      <h3>${titulo}</h3>
+      <p>${texto}</p>
+      <ul>${itens.map((x) => `<li>${ic("ok")}${x}</li>`).join("")}</ul>
+      ${extra}
+    </article>`;
+
   const canais = () => `
     <section class="secao" id="comprar" style="margin-top:110px">
-      <span class="rotulo rotulo-ouro">${ic("chave")} Como comprar</span>
-      <h2 class="titulo-secao">O mesmo app. <em>Três jeitos</em> de pagar.</h2>
-      <p class="lead">Tudo é grátis para começar, e o Pro vem com teste. Muda só por onde você instala — e, com isso, como paga o Pro.</p>
+      <span class="rotulo rotulo-ouro">${ic("chave")} ${L.comprarRotulo}</span>
+      <h2 class="titulo-secao">${L.comprarTitulo}</h2>
+      <p class="lead">${L.comprarTexto}</p>
       <div class="canais">
-        <article class="canal vidro canal-destaque surge">
-          <div class="canal-cabeca"><span class="canal-icone">${ic("telegram")}</span><span class="selo selo-ok">Aberto</span></div>
-          <h3>APK + chave pelo Telegram</h3>
-          <p>Baixe o APK direto daqui e compre o Pro com Bitcoin ou USDT no bot da loja. A chave chega na hora.</p>
-          <ul>
-            <li>${ic("ok")}Lightning, on-chain, USDT e USDC</li>
-            <li>${ic("ok")}Funciona sem internet depois de ativada</li>
-            <li>${ic("ok")}Na TV, a chave é colada pelo celular</li>
-          </ul>
-          <a class="botao botao-ouro" href="${LOJA.bot}" ${externo}>${ic("telegram")} Abrir a loja</a>
-        </article>
-        <article class="canal vidro surge">
-          <div class="canal-cabeca"><span class="canal-icone">${ic("play")}</span><span class="selo selo-breve">Em breve</span></div>
-          <h3>Google Play</h3>
-          <p>Para celular e Google TV. O Pro é comprado dentro do app, pela cobrança da Play.</p>
-          <ul>
-            <li>${ic("ok")}Cartão, saldo Google e o que a Play aceitar</li>
-            <li>${ic("ok")}7 dias com tudo liberado</li>
-            <li>${ic("ok")}Atualiza sozinho pela loja</li>
-          </ul>
-        </article>
-        <article class="canal vidro surge">
-          <div class="canal-cabeca"><span class="canal-icone">${ic("amazon")}</span><span class="selo selo-breve">Em breve</span></div>
-          <h3>Amazon Appstore</h3>
-          <p>Para o Fire TV. O Pro é comprado dentro do app, pela conta Amazon.</p>
-          <ul>
-            <li>${ic("ok")}Cobrança da Amazon, sem cadastro extra</li>
-            <li>${ic("ok")}7 dias com tudo liberado</li>
-            <li>${ic("ok")}Fire TV Stick, Cube e TVs Fire</li>
-          </ul>
-        </article>
+        ${canal("telegram", L.canalTg, true, `<a class="botao botao-ouro" href="${LOJA.bot}" ${externo}>${ic("telegram")} ${L.abrirLoja}</a>`)}
+        ${canal("play", L.canalPlay, false)}
+        ${canal("amazon", L.canalAmazon, false)}
       </div>
-      <div class="nota">${ic("estrela")}<span><b>A compra fica onde foi feita.</b> A Play não enxerga o que foi pago na Amazon, e a chave do Telegram vale no APK baixado daqui e no Partition — as lojas não permitem outro meio de pagamento dentro delas.</span></div>
+      <div class="nota">${ic("estrela")}<span>${L.notaCompra}</span></div>
     </section>`;
 
   const pacote = () => `
@@ -174,15 +308,15 @@
       <div class="pacote surge">
         <svg class="pacote-x" viewBox="-260 -260 520 520" aria-hidden="true"><use href="#lx-x" x="-260" y="-260" width="520" height="520"/></svg>
         <div>
-          <span class="rotulo rotulo-ouro">${ic("estrela")} Pacote completo</span>
-          <h2 class="titulo-secao">Uma chave. <em>Todos os apps.</em></h2>
-          <p class="lead">Player Pro, Folder Pro e Partition Premium numa chave só, ativada em cada app sem internet.</p>
+          <span class="rotulo rotulo-ouro">${ic("estrela")} ${L.pacoteRotulo}</span>
+          <h2 class="titulo-secao">${L.pacoteTitulo}</h2>
+          <p class="lead">${L.pacoteTexto}</p>
           <div class="pacote-icones">${PRODUTOS.map((p) => `<img src="${p.icone}" alt="${esc(p.titulo)}" width="52" height="52">`).join("")}</div>
         </div>
         <div class="pacote-preco">
-          <div class="preco-grande"><small>US$</small>35</div>
-          <p>em vez de US$ 39 · vitalício</p>
-          <a class="botao botao-ouro" href="${LOJA.pacote.url}" ${externo}>${ic("telegram")} Comprar o pacote</a>
+          <div class="preco-grande"><small>${L.moeda}</small>${LOJA.pacote.preco}</div>
+          <p>${L.pacoteEmVez(LOJA.pacote.soma)}</p>
+          <a class="botao botao-ouro" href="${LOJA.pacote.url}" ${externo}>${ic("telegram")} ${L.pacoteComprar}</a>
         </div>
       </div>
     </section>`;
@@ -190,31 +324,26 @@
   // ---------- telas ----------
 
   function telaInicio() {
-    document.title = "LibertyX — apps sem anúncio, sem conta";
+    document.title = L.tituloInicio;
     app.innerHTML = `
       <section class="heroi">
         <div>
-          <span class="rotulo rotulo-ouro">${ic("estrela")} Família LibertyX</span>
-          <h1>Software que é <em>seu</em>.</h1>
-          <p class="lead">Um player que abre tudo, um gerenciador de arquivos feito para a TV e uma ferramenta que devolve os dados do seu disco. Independentes, bonitos e sem amarras.</p>
+          <span class="rotulo rotulo-ouro">${ic("estrela")} ${L.familia}</span>
+          <h1>${L.heroiTitulo}</h1>
+          <p class="lead">${L.heroiTexto}</p>
           <div class="heroi-acoes">
-            <a class="botao botao-ouro" href="#apps">Conhecer os apps ${ic("seta")}</a>
-            <a class="botao" href="${GH}" ${externo}>${ic("github")} Código no GitHub</a>
+            <a class="botao botao-ouro" href="#apps" data-ancora="apps">${L.conhecer} ${ic("seta")}</a>
+            <a class="botao" href="${GH}" ${externo}>${ic("github")} ${L.codigoGithub}</a>
           </div>
-          <ul class="principios">
-            <li>${ic("ok")}Sem anúncios</li>
-            <li>${ic("ok")}Sem conta</li>
-            <li>${ic("ok")}Sem rastreamento</li>
-            <li>${ic("ok")}Compra única</li>
-          </ul>
+          <ul class="principios">${L.principios.map((x) => `<li>${ic("ok")}${x}</li>`).join("")}</ul>
         </div>
         ${orbita()}
       </section>
 
       <section class="secao" id="apps">
-        <span class="rotulo">Os apps</span>
-        <h2 class="titulo-secao">Feitos com <em>capricho</em>, um por um.</h2>
-        <p class="lead">Cada app tem a sua página com recursos, especificações, downloads e as lojas onde ele estiver.</p>
+        <span class="rotulo">${L.osApps}</span>
+        <h2 class="titulo-secao">${L.appsTitulo}</h2>
+        <p class="lead">${L.appsTexto}</p>
         <div class="vitrine">${PRODUTOS.map(cartao).join("")}</div>
       </section>
 
@@ -235,162 +364,158 @@
     switch (aba) {
       case "recursos":
         return `
-          <h2>O que ele faz</h2>
-          <p class="lead">${esc(p.slogan)}</p>
+          <h2>${L.recursosTitulo}</h2>
+          <p class="lead">${esc(t(p.slogan))}</p>
           <div class="recursos">
-            ${p.recursos.map(([i, t, d]) => `
+            ${t(p.recursos).map(([i, ti, d]) => `
               <article class="recurso vidro surge">
                 <span class="canal-icone">${ic(i)}</span>
-                <h3>${esc(t)}</h3>
+                <h3>${esc(ti)}</h3>
                 <p>${esc(d)}</p>
               </article>`).join("")}
           </div>`;
 
       case "specs":
         return `
-          <h2>Especificações</h2>
-          <p class="lead">Onde roda, o que abre e como foi feito.</p>
+          <h2>${L.specsTitulo}</h2>
+          <p class="lead">${L.specsTexto}</p>
           <div class="vidro specs-caixa">
             <table class="specs"><tbody>
-              ${p.specs.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td>${v}</td></tr>`).join("")}
+              ${t(p.specs).map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td>${v}</td></tr>`).join("")}
             </tbody></table>
           </div>`;
 
       case "baixar": {
         const tv = p.downloads.find((d) => d.icone === "tv");
         return `
-          <h2>Baixar</h2>
-          <p class="lead">Sempre a versão mais recente, direto do GitHub, assinada com a mesma chave — uma atualiza por cima da outra.</p>
+          <h2>${L.baixarTitulo}</h2>
+          <p class="lead">${L.baixarTexto}</p>
           <div class="baixar-grade">
             ${p.downloads.map((d) => `
               <a class="arquivo vidro${d.principal ? " principal" : ""}" href="${urlArquivo(p, d.arquivo)}">
                 <span class="canal-icone">${ic(d.icone)}</span>
                 <div>
-                  <h3>${esc(d.nome)}${d.principal ? '<span class="principal-selo">Recomendado</span>' : ""}</h3>
-                  <p>${esc(d.detalhe)}</p>
+                  <h3>${esc(t(d.nome))}${d.principal ? `<span class="principal-selo">${L.recomendado}</span>` : ""}</h3>
+                  <p>${esc(t(d.detalhe))}</p>
                   <code>${esc(d.arquivo)}</code>
                 </div>
-                <span class="arquivo-baixar">${ic("download")} <span data-arquivo="${esc(d.arquivo)}">${esc(d.tamanho)}</span></span>
+                <span class="arquivo-baixar">${ic("download")} <span data-arquivo="${esc(d.arquivo)}">${esc(tamanhoFixo(d.tamanho))}</span></span>
               </a>`).join("")}
           </div>
           <p class="versao" data-versao="${p.id}" hidden></p>
 
-          <h3 class="subtitulo">Lojas</h3>
+          <h3 class="subtitulo">${L.lojas}</h3>
           <div class="lojas">
             ${p.lojas.map((l) => {
-              const L = LOJAS[l.loja];
-              const nota = l.nota ? ` · ${esc(l.nota)}` : "";
+              const nome = L.lojasNome[l.loja];
+              const nota = l.nota ? ` · ${esc(t(l.nota))}` : "";
               return l.url
-                ? `<a class="loja" href="${esc(l.url)}" ${externo}>${ic(L.icone)}<div><small>Disponível${nota}</small><strong>${L.nome}</strong></div>${ic("seta")}</a>`
-                : `<div class="loja breve">${ic(L.icone)}<div><small>Em breve${nota}</small><strong>${L.nome}</strong></div></div>`;
+                ? `<a class="loja" href="${esc(l.url)}" ${externo}>${ic(LOJA_ICONE[l.loja])}<div><small>${L.disponivel}${nota}</small><strong>${nome}</strong></div>${ic("seta")}</a>`
+                : `<div class="loja breve">${ic(LOJA_ICONE[l.loja])}<div><small>${L.emBreve}${nota}</small><strong>${nome}</strong></div></div>`;
             }).join("")}
-            <a class="loja" href="${p.telegram}" ${externo}>${ic("telegram")}<div><small>Aberto · Bitcoin e USDT</small><strong>Chave no Telegram</strong></div>${ic("seta")}</a>
+            <a class="loja" href="${p.telegram}" ${externo}>${ic("telegram")}<div><small>${L.chaveTg[0]}</small><strong>${L.chaveTg[1]}</strong></div>${ic("seta")}</a>
           </div>
 
           ${tv && p.instalarTv ? `
           <section class="instalar vidro">
             <div>
-              <h3>Instalar na TV</h3>
-              <p class="lead" style="font-size:15.5px">Google TV e Fire TV instalam o APK pelo app <b>Downloader</b>, que está na loja das duas. É feito uma vez; depois o app atualiza por cima.</p>
+              <h3>${L.instalarTitulo}</h3>
+              <p class="lead" style="font-size:15.5px">${L.instalarTexto}</p>
               <div class="endereco">
                 <code>${urlArquivo(p, tv.arquivo)}</code>
-                <button class="copiar" data-copiar="${urlArquivo(p, tv.arquivo)}">${ic("copiar")} Copiar</button>
+                <button class="copiar" data-copiar="${urlArquivo(p, tv.arquivo)}">${ic("copiar")} ${L.copiar}</button>
               </div>
             </div>
-            <ol>
-              <li><span>Instale o <b>Downloader</b> pela loja da TV.</span></li>
-              <li><span>Libere a instalação: <b>Fire TV</b> — Configurações › Minha Fire TV › Opções do desenvolvedor › Instalar apps desconhecidos. <b>Google TV</b> — Configurações › Sistema › Sobre, clique 7 vezes em “Versão”, depois Apps › Segurança › Apps desconhecidos.</span></li>
-              <li><span>No Downloader, digite o endereço deste quadro e confirme a instalação.</span></li>
-              <li><span>Para o Pro: na tela do Pro escolha <b>Tenho uma chave</b> e cole a chave pelo celular no endereço que a TV mostrar.</span></li>
-            </ol>
+            <ol>${L.passos.map((x) => `<li><span>${x}</span></li>`).join("")}</ol>
           </section>` : ""}`;
       }
 
       case "preco": {
         const g = p.gratisPro;
-        const [nomeGratis, nomePro] = g.nomes || ["Grátis", "Pro"];
+        const [nomeGratis, nomePro] = t(g.nomes) || L.nomesPlano;
         return `
-          <h2>${esc(nomeGratis)} e ${esc(nomePro)}</h2>
-          <p class="lead">Sem assinatura: o ${esc(nomePro)} é uma compra única e fica para sempre.</p>
+          <h2>${esc(L.planosTitulo(nomeGratis, nomePro))}</h2>
+          <p class="lead">${esc(L.planosTexto(nomePro))}</p>
           <div class="planos">
             <article class="plano vidro">
               <h3>${esc(nomeGratis)}</h3>
-              <div class="preco-grande"><small>US$</small>0</div>
-              <p class="preco-nota">para sempre</p>
-              <ul>${g.gratis.map((t) => `<li>${ic("ok")}${esc(t)}</li>`).join("")}</ul>
-              <a class="botao" href="#/${p.id}/baixar">${ic("download")} Baixar grátis</a>
+              <div class="preco-grande"><small>${L.moeda}</small>0</div>
+              <p class="preco-nota">${L.paraSempre}</p>
+              <ul>${t(g.gratis).map((x) => `<li>${ic("ok")}${esc(x)}</li>`).join("")}</ul>
+              <a class="botao" href="${linkAba(p.id, "baixar")}">${ic("download")} ${L.baixarGratis}</a>
             </article>
             <article class="plano vidro plano-pro">
-              <span class="selo selo-ok teste">${esc(g.teste)}</span>
+              <span class="selo selo-ok teste">${esc(t(g.teste))}</span>
               <h3>${esc(nomePro)}</h3>
-              <div class="preco-grande"><small>US$</small>${esc(g.preco.replace("US$ ", ""))}</div>
-              <p class="preco-nota">${esc(g.precoNota)}</p>
-              <ul>${["Tudo do " + nomeGratis, ...g.pro].map((t) => `<li>${ic("ok")}${esc(t)}</li>`).join("")}</ul>
-              <a class="botao botao-ouro" href="${p.telegram}" ${externo}>${ic("telegram")} Comprar com Bitcoin ou USDT</a>
+              <div class="preco-grande"><small>${L.moeda}</small>${g.preco}</div>
+              <p class="preco-nota">${esc(t(g.precoNota))}</p>
+              <ul>${[L.tudoDo(nomeGratis), ...t(g.pro)].map((x) => `<li>${ic("ok")}${esc(x)}</li>`).join("")}</ul>
+              <a class="botao botao-ouro" href="${p.telegram}" ${externo}>${ic("telegram")} ${L.comprarCripto}</a>
             </article>
           </div>
-          <div class="nota">${ic("chave")}<span>${p.id === "partition"
-            ? "<b>A chave chega na hora pelo Telegram</b> e é conferida no próprio PC, sem internet. O pagamento com cartão abre em breve."
-            : "<b>Pelo APK daqui</b>, o Pro se compra com a chave do Telegram. <b>Na Google Play e na Amazon</b>, quando abrirem, o Pro é comprado dentro do app, pela própria loja."}
-            Quer todos os apps? O <a href="${LOJA.pacote.url}" ${externo} style="color:var(--ouro)">pacote completo</a> sai por ${LOJA.pacote.preco}.</span></div>`;
+          <div class="nota">${ic("chave")}<span>${p.id === "partition" ? L.notaPartition : L.notaApps}
+            ${L.notaPacote(LOJA.pacote.url, L.moedaTexto(LOJA.pacote.preco))}</span></div>`;
       }
 
       default:
         return `
-          <div class="sobre">${p.sobre.map((t) => `<p>${esc(t)}</p>`).join("")}</div>
+          <div class="sobre">${t(p.sobre).map((x) => `<p>${esc(x)}</p>`).join("")}</div>
           <div class="galeria">
             ${p.galeria.map(([src, leg], i) => `
               <figure>
-                <button data-lupa="${i}" aria-label="Ampliar: ${esc(leg)}"><img src="${src}" alt="${esc(leg)}"${lazy}></button>
-                <figcaption>${esc(leg)}</figcaption>
+                <button data-lupa="${i}" aria-label="${L.ampliar}: ${esc(t(leg))}"><img src="${t(src)}" alt="${esc(t(leg))}"${lazy}></button>
+                <figcaption>${esc(t(leg))}</figcaption>
               </figure>`).join("")}
           </div>`;
     }
   }
 
-  let atual = { id: null, aba: null };
+  let atual = { id: null, aba: null, lang: null };
 
   function telaProduto(p, aba) {
-    const mesmo = atual.id === p.id;
+    const mesmo = atual.id === p.id && atual.lang === lang;
     document.title = `${p.titulo} — LibertyX`;
+    const nomePro = (t(p.gratisPro.nomes) || L.nomesPlano)[1];
 
     if (!mesmo) {
+      const voltaPara = atual.id === p.id ? scrollY : 0;
       app.innerHTML = `
         <section class="prod-heroi">
           <div>
-            <a class="voltar" href="#/">${ic("voltar")} Todos os apps</a>
+            <a class="voltar" href="${link()}">${ic("voltar")} ${L.todosApps}</a>
             <div class="prod-id">
               <img src="${p.icone}" alt="" width="84" height="84">
               <h1><span>LibertyX</span>${esc(p.nome)}</h1>
             </div>
-            <p class="prod-slogan">${esc(p.slogan)}</p>
-            <p class="lead">${esc(p.resumo)}</p>
+            <p class="prod-slogan">${esc(t(p.slogan))}</p>
+            <p class="lead">${esc(t(p.resumo))}</p>
             <ul class="chips">${p.plataformas.map((x) => `<li class="chip">${esc(x)}</li>`).join("")}</ul>
             <div class="prod-acoes">
-              <a class="botao botao-ouro" href="#/${p.id}/baixar">${ic("download")} Baixar grátis</a>
-              <a class="botao" href="#/${p.id}/preco">${ic("chave")} ${p.gratisPro.nomes ? p.gratisPro.nomes[1] : "Pro"} · ${esc(p.gratisPro.preco)}</a>
+              <a class="botao botao-ouro" href="${linkAba(p.id, "baixar")}">${ic("download")} ${L.baixarGratis}</a>
+              <a class="botao" href="${linkAba(p.id, "preco")}">${ic("chave")} ${esc(nomePro)} · ${L.moedaTexto(p.gratisPro.preco)}</a>
             </div>
           </div>
-          <div class="prod-tela"><img src="${p.destaque}" alt="${esc(p.titulo)}"></div>
+          <div class="prod-tela"><img src="${t(p.destaque)}" alt="${esc(p.titulo)}"></div>
         </section>
         <div class="abas-faixa">
-          <div class="abas" role="tablist" aria-label="Seções do ${esc(p.titulo)}">
-            ${ABAS.map(([k, t]) => `<button class="aba" role="tab" id="aba-${k}" aria-controls="painel" data-aba="${k}">${t}</button>`).join("")}
+          <div class="abas" role="tablist" aria-label="${esc(L.secoesDo(p.titulo))}">
+            ${ABAS.map((k) => `<button class="aba" role="tab" id="aba-${k}" aria-controls="painel" data-aba="${k}">${L.abas[k]}</button>`).join("")}
           </div>
         </div>
         <section class="painel" id="painel" role="tabpanel" tabindex="-1"></section>
         <section class="outros">
-          <span class="rotulo">Também da LibertyX</span>
+          <span class="rotulo">${L.tambem}</span>
           <div class="outros-grade">
             ${PRODUTOS.filter((o) => o.id !== p.id).map((o) => `
-              <a class="outro vidro" href="#/${o.id}">
+              <a class="outro vidro" href="${link(o.id)}">
                 <img src="${o.icone}" alt="" width="54" height="54">
                 <div><strong>${esc(o.titulo)}</strong><span>${esc(o.plataformas.join(" · "))}</span></div>
                 ${ic("seta")}
               </a>`).join("")}
           </div>
         </section>`;
-      window.scrollTo({ top: 0, behavior: "instant" });
+      // trocar de idioma não tira a pessoa do lugar; abrir outro app volta ao topo
+      window.scrollTo({ top: voltaPara, behavior: "instant" });
     }
 
     document.querySelectorAll(".aba").forEach((b) => {
@@ -410,29 +535,60 @@
     document.querySelector(`.aba[data-aba="${aba}"]`)?.scrollIntoView({ block: "nearest", inline: "center" });
     if (aba === "baixar") aplicarRelease(p);
     if (aba === "visao") ligarLupa(p);
-    atual = { id: p.id, aba };
+    atual = { id: p.id, aba, lang };
   }
 
   // ---------- rotas ----------
 
-  function rota() {
+  function lerEndereco() {
     const partes = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+    const idioma = IDIOMAS.includes(partes[0]) ? partes.shift() : null;
+    return { idioma, partes };
+  }
+
+  function rota() {
+    const { idioma, partes } = lerEndereco();
+    if (idioma && idioma !== lang) definirIdioma(idioma);
     const p = PRODUTOS.find((x) => x.id === partes[0]);
     if (p) {
-      const aba = ABAS.some(([k]) => k === partes[1]) ? partes[1] : "visao";
-      telaProduto(p, aba);
+      telaProduto(p, abaDoSlug(partes[1]) || "visao");
     } else {
-      const ancora = partes[0] === "comprar" ? "comprar" : location.hash.startsWith("#apps") ? "apps" : null;
-      if (atual.id !== "inicio") telaInicio();
-      atual = { id: "inicio", aba: null };
+      const ancora = IDIOMAS.some((i) => U[i].slugs.comprar === partes[0]) ? "comprar" : null;
+      const jaNoInicio = atual.id === "inicio";
+      const redesenhar = !(jaNoInicio && atual.lang === lang);
+      const y = scrollY;
+      if (redesenhar) telaInicio();
+      atual = { id: "inicio", aba: null, lang };
       if (ancora) requestAnimationFrame(() => document.getElementById(ancora)?.scrollIntoView({ behavior: "smooth" }));
-      else if (!location.hash || location.hash === "#/") window.scrollTo({ top: 0, behavior: "instant" });
+      else if (!jaNoInicio) window.scrollTo({ top: 0, behavior: "instant" });
+      else if (redesenhar) window.scrollTo({ top: y, behavior: "instant" }); // só trocou o idioma
     }
     document.querySelectorAll("[data-nav]").forEach((a) =>
-      a.classList.toggle("ativo", (a.dataset.nav === "comprar") === (partes[0] === "comprar") && !p)
+      a.classList.toggle("ativo", !p && (a.dataset.nav === "comprar") === (partes[0] === L.slugs.comprar))
     );
     revelar();
   }
+
+  function definirIdioma(novo) {
+    lang = novo;
+    L = U[lang];
+    try { localStorage.setItem("lx-lang", lang); } catch (_) {}
+    traduzirMoldura();
+  }
+
+  // o seletor no topo: mesmo lugar do site, no outro idioma
+  document.querySelector(".idioma").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-lang]");
+    if (!b || b.dataset.lang === lang) return;
+    const { partes } = lerEndereco();
+    definirIdioma(b.dataset.lang);
+    const p = PRODUTOS.find((x) => x.id === partes[0]);
+    let caminho = "";
+    if (p) caminho = `${p.id}/${L.slugs[abaDoSlug(partes[1]) || atual.aba || "visao"]}`;
+    else if (IDIOMAS.some((i) => U[i].slugs.comprar === partes[0])) caminho = L.slugs.comprar;
+    history.replaceState(null, "", link(caminho));
+    rota();
+  });
 
   // ---------- comportamentos ----------
 
@@ -456,9 +612,9 @@
   function mostrarFoto(i) {
     foto = (i + fotos.length) % fotos.length;
     const [src, leg] = fotos[foto];
-    lupa.querySelector("img").src = src;
-    lupa.querySelector("img").alt = leg;
-    lupa.querySelector("figcaption").textContent = leg;
+    lupa.querySelector("img").src = t(src);
+    lupa.querySelector("img").alt = t(leg);
+    lupa.querySelector("figcaption").textContent = t(leg);
   }
   function ligarLupa(p) {
     fotos = p.galeria;
@@ -475,18 +631,20 @@
     if (e.key === "ArrowRight") mostrarFoto(foto + 1);
   });
 
-  // cliques: abas e copiar
+  // cliques: abas, âncoras da página inicial e copiar
   app.addEventListener("click", (e) => {
     const aba = e.target.closest(".aba");
-    if (aba) { location.hash = `#/${atual.id}/${aba.dataset.aba}`; return; }
+    if (aba) { location.hash = linkAba(atual.id, aba.dataset.aba); return; }
+    const anc = e.target.closest("[data-ancora]");
+    if (anc) { e.preventDefault(); document.getElementById(anc.dataset.ancora)?.scrollIntoView({ behavior: "smooth" }); return; }
     const cp = e.target.closest("[data-copiar]");
     if (cp) {
       const texto = cp.dataset.copiar;
-      const feito = () => { cp.innerHTML = `${ic("ok")} Copiado`; setTimeout(() => (cp.innerHTML = `${ic("copiar")} Copiar`), 1800); };
+      const feito = () => { cp.innerHTML = `${ic("ok")} ${L.copiado}`; setTimeout(() => (cp.innerHTML = `${ic("copiar")} ${L.copiar}`), 1800); };
       if (navigator.clipboard) navigator.clipboard.writeText(texto).then(feito, () => {});
       else {
-        const t = Object.assign(document.createElement("textarea"), { value: texto });
-        document.body.append(t); t.select(); document.execCommand("copy"); t.remove(); feito();
+        const x = Object.assign(document.createElement("textarea"), { value: texto });
+        document.body.append(x); x.select(); document.execCommand("copy"); x.remove(); feito();
       }
     }
   });
@@ -498,7 +656,7 @@
     const todas = [...document.querySelectorAll(".aba")];
     let i = todas.indexOf(aba);
     i = e.key === "Home" ? 0 : e.key === "End" ? todas.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + todas.length) % todas.length;
-    location.hash = `#/${atual.id}/${todas[i].dataset.aba}`;
+    location.hash = linkAba(atual.id, todas[i].dataset.aba);
     requestAnimationFrame(() => document.querySelector(".aba[aria-selected=true]")?.focus());
   });
 
@@ -506,5 +664,14 @@
   addEventListener("scroll", () => topo.classList.toggle("rolou", scrollY > 8), { passive: true });
   addEventListener("hashchange", rota);
   document.getElementById("ano").textContent = new Date().getFullYear();
+
+  // endereço sem idioma (links antigos, #/player) ganha o idioma sem criar histórico
+  const { idioma } = lerEndereco();
+  if (idioma) definirIdioma(idioma);
+  else {
+    traduzirMoldura();
+    const resto = location.hash.replace(/^#\/?/, "");
+    if (resto && !resto.startsWith("apps")) history.replaceState(null, "", link(resto));
+  }
   rota();
 })();

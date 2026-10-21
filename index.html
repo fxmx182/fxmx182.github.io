@@ -22,17 +22,22 @@
   <div class="fundo" aria-hidden="true"></div>
 
   <header class="topo">
-    <a class="marca" href="#/" aria-label="LibertyX — início">
+    <a class="marca" href="#/" data-link="" aria-label="LibertyX">
       <svg class="marca-x" viewBox="-260 -260 520 520" aria-hidden="true"><use href="#lx-x" x="-260" y="-260" width="520" height="520"/></svg>
       <span>Liberty<b>X</b></span>
     </a>
     <nav class="menu" aria-label="Principal">
-      <a href="#/" data-nav="inicio">Apps</a>
-      <a href="#/comprar" data-nav="comprar">Como comprar</a>
+      <a href="#/" data-nav="inicio" data-link="" data-t="navApps">Apps</a>
+      <a href="#/comprar" data-nav="comprar" data-link="comprar" data-t="navComprar">Como comprar</a>
       <a href="https://github.com/fxmx182" target="_blank" rel="noopener" class="so-largo">GitHub</a>
       <a class="botao botao-ouro botao-pequeno" href="https://t.me/libertx_partition_bot" target="_blank" rel="noopener">
-        <svg class="i"><use href="#i-telegram"/></svg><span>Loja</span>
+        <svg class="i"><use href="#i-telegram"/></svg><span data-t="navLoja">Loja</span>
       </a>
+      <div class="idioma" role="group" aria-label="Idioma">
+        <svg class="i" aria-hidden="true"><use href="#i-idiomas"/></svg>
+        <button type="button" data-lang="pt" lang="pt" aria-pressed="true" title="Português">PT</button>
+        <button type="button" data-lang="en" lang="en" aria-pressed="false" title="English">EN</button>
+      </div>
     </nav>
   </header>
 
@@ -44,34 +49,34 @@
         <svg class="marca-x" viewBox="-260 -260 520 520" aria-hidden="true"><use href="#lx-x" x="-260" y="-260" width="520" height="520"/></svg>
         <div>
           <strong>Liberty<b>X</b></strong>
-          <p>Apps independentes. Sem anúncio, sem conta, sem rastreamento.</p>
+          <p data-t="rodape.lema">Apps independentes. Sem anúncio, sem conta, sem rastreamento.</p>
         </div>
       </div>
       <div class="rodape-cols">
         <div>
-          <h4>Apps</h4>
-          <a href="#/player">Player</a>
-          <a href="#/folder">Folder</a>
-          <a href="#/partition">Partition</a>
+          <h4 data-t="rodape.apps">Apps</h4>
+          <a href="#/player" data-link="player">Player</a>
+          <a href="#/folder" data-link="folder">Folder</a>
+          <a href="#/partition" data-link="partition">Partition</a>
         </div>
         <div>
-          <h4>Loja</h4>
-          <a href="#/comprar">Como comprar</a>
+          <h4 data-t="rodape.loja">Loja</h4>
+          <a href="#/comprar" data-link="comprar" data-t="rodape.comprar">Como comprar</a>
           <a href="https://t.me/libertx_partition_bot" target="_blank" rel="noopener">Telegram</a>
-          <a href="https://t.me/libertx_partition_bot?start=pacote" target="_blank" rel="noopener">Pacote completo</a>
+          <a href="https://t.me/libertx_partition_bot?start=pacote" target="_blank" rel="noopener" data-t="rodape.pacote">Pacote completo</a>
         </div>
         <div>
-          <h4>Código</h4>
+          <h4 data-t="rodape.codigo">Código</h4>
           <a href="https://github.com/fxmx182" target="_blank" rel="noopener">GitHub</a>
-          <a href="https://github.com/fxmx182/libertyx-player-android/blob/main/PRIVACY.md" target="_blank" rel="noopener">Privacidade — Player</a>
-          <a href="https://github.com/fxmx182/libertyx-folder-android/blob/main/PRIVACY.md" target="_blank" rel="noopener">Privacidade — Folder</a>
+          <a href="https://github.com/fxmx182/libertyx-player-android/blob/main/PRIVACY.md" target="_blank" rel="noopener" data-t="rodape.privPlayer">Privacidade — Player</a>
+          <a href="https://github.com/fxmx182/libertyx-folder-android/blob/main/PRIVACY.md" target="_blank" rel="noopener" data-t="rodape.privFolder">Privacidade — Folder</a>
         </div>
       </div>
     </div>
-    <p class="rodape-fim">© <span id="ano">2026</span> LibertyX · feito à mão por <a href="https://github.com/fxmx182" target="_blank" rel="noopener">fxmx182</a></p>
+    <p class="rodape-fim">© <span id="ano">2026</span> LibertyX · <span data-t="rodape.feito">feito à mão por</span> <a href="https://github.com/fxmx182" target="_blank" rel="noopener">fxmx182</a></p>
   </footer>
 
-  <dialog class="lupa" id="lupa" aria-label="Imagem ampliada">
+  <dialog class="lupa" id="lupa">
     <button class="lupa-fechar" aria-label="Fechar">×</button>
     <button class="lupa-seta lupa-ant" aria-label="Anterior">‹</button>
     <figure><img alt=""><figcaption></figcaption></figure>
