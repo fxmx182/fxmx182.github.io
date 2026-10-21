@@ -40,6 +40,11 @@ Os links apontam para o release mais recente de cada repositório, então nunca 
 Versão, data e tamanho vêm ao vivo da API do GitHub; o `tamanho` escrito em `produtos.js` só
 aparece se a API não responder.
 
+O Partition publica em dois releases — Windows em `latest`, Linux em `linux-latest` — e por isso
+separa os arquivos em `grupos` (Windows, Linux x64, Linux ARM64), cada grupo com a sua etiqueta e a
+sua linha de versão. A grade "Na edição Linux" da aba Recursos é o `recursosExtra`, e o quadro
+"Qual pacote escolher" da aba Baixar é o `guiaBaixar`.
+
 ## Ver localmente
 
 ```bash

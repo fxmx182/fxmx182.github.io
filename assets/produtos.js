@@ -2,7 +2,9 @@
 //
 //   - loja lançada → troque `url: null` pela página da loja (Google Play, Amazon…);
 //     o selo "Em breve" vira o botão na hora, nos dois idiomas.
-//   - plataforma nova → acrescente um item em `downloads`.
+//   - plataforma nova → acrescente um item em `downloads`. Quem publica em mais de um release
+//     (o Partition: Windows em "latest", Linux em "linux-latest") separa os arquivos em `grupos`,
+//     cada um com a sua etiqueta; o item diz a qual grupo pertence.
 //
 // Texto que muda de idioma é `{ pt: …, en: … }`; o que é igual nos dois (nomes, preços,
 // links) fica escrito uma vez só.
@@ -245,24 +247,26 @@ window.PRODUTOS = [
     icone: "img/icone-partition.png",
     slogan: { pt: "Seus discos. Seus dados de volta.", en: "Your disks. Your data, back." },
     resumo: {
-      pt: "Ferramenta de discos para Windows com foco em recuperação: devolve arquivos apagados com nome e pasta, acha partições perdidas, migra o sistema para SSD e grava pendrives de boot.",
-      en: "A disk tool for Windows focused on recovery: brings deleted files back with their names and folders, finds lost partitions, migrates your system to an SSD and makes bootable USB drives.",
+      pt: "Ferramenta de discos para Windows e Linux com foco em recuperação: devolve arquivos apagados com nome e pasta, acha partições perdidas, migra o sistema para outro disco e grava pendrives de boot.",
+      en: "A disk tool for Windows and Linux focused on recovery: brings deleted files back with their names and folders, finds lost partitions, migrates your system to another disk and makes bootable USB drives.",
     },
-    plataformas: ["Windows 10", "Windows 11"],
+    plataformas: ["Windows 10", "Windows 11", "Linux"],
     destaque: "img/partition-discos.webp",
     capa: "img/partition-recuperar.webp",
     repo: "libertyx-partition",
-    tag: "latest", // o Partition publica sempre no release de etiqueta "latest"
+    tag: "latest", // o Partition do Windows publica sempre no release "latest"; o do Linux, em "linux-latest" (ver `grupos`)
     sobre: {
       pt: [
         "O LibertyX Partition tem motor próprio: lê NTFS, FAT, exFAT, ext2/3/4, HFS+ e APFS direto dos setores. Arquivo apagado volta com o nome, a pasta e a data originais — e o que perdeu o nome ainda é reconhecido pelo conteúdo, em mais de 30 formatos.",
         "Tudo o que muda o disco vai para uma fila, como nos melhores do mercado: nada é gravado antes de você confirmar, e toda escrita de tabela guarda um backup restaurável.",
-        "O autoteste roda a cada versão num disco virtual do Windows: cria, apaga e recupera, reduz, move, converte, formata e restaura — antes de chegar a você.",
+        "A edição Linux usa o mesmo motor e soma o que é do Linux: ext4, XFS e Btrfs recuperados direto dos setores, LUKS e BitLocker, LVM e RAID, e o sistema inteiro levado para outro disco, pronto para dar boot. Roda em x64 e ARM64, do PC ao Raspberry Pi.",
+        "O autoteste roda a cada versão — num disco virtual do Windows e, no Linux, num disco loop em x64 e ARM64: cria, apaga e recupera, reduz, move, converte, formata e restaura. A migração do Linux e o reparo do boot são provados em máquinas virtuais UEFI e BIOS antes de chegar a você.",
       ],
       en: [
         "LibertyX Partition has its own engine: it reads NTFS, FAT, exFAT, ext2/3/4, HFS+ and APFS straight from the sectors. Deleted files come back with their original name, folder and date — and files that lost their name are still recognized by content, in more than 30 formats.",
         "Everything that changes a disk goes into a queue, like the best tools out there: nothing is written until you confirm, and every partition-table write keeps a restorable backup.",
-        "Every release runs a self-test on a virtual Windows disk: create, delete and recover, shrink, move, convert, format and restore — before it ever reaches you.",
+        "The Linux edition runs the same engine and adds what Linux needs: ext4, XFS and Btrfs recovered straight from the sectors, LUKS and BitLocker, LVM and RAID, and your whole system moved to another disk, ready to boot. It runs on x64 and ARM64, from PCs to the Raspberry Pi.",
+        "Every release runs a self-test — on a virtual Windows disk and, on Linux, on a loop disk on x64 and ARM64: create, delete and recover, shrink, move, convert, format and restore. Linux system migration and boot repair are proven in UEFI and BIOS virtual machines before they ever reach you.",
       ],
     },
     galeria: [
@@ -297,6 +301,35 @@ window.PRODUTOS = [
         ["seguro", "Safe by design", "Change queue, partition-table backups and nothing destructive on the Windows disk."],
       ],
     },
+    // o que só a edição Linux tem, numa grade abaixo dos recursos
+    recursosExtra: {
+      titulo: { pt: "Na edição Linux", en: "In the Linux edition" },
+      texto: { pt: "O mesmo motor, mais o que é do Linux — em x64 e ARM64.", en: "The same engine, plus what Linux needs — on x64 and ARM64." },
+      itens: {
+        pt: [
+          ["resgate", "ext4, XFS e Btrfs", "Apagados de volta também em NTFS, FAT e exFAT — lidos dos setores, mesmo em volume que não monta."],
+          ["particao", "Partições como no GParted", "ext4, XFS, Btrfs, F2FS, NTFS, exFAT, FAT e swap; o / cresce montado e partição perdida volta."],
+          ["chave", "LUKS e BitLocker", "Desbloqueia, monta e recupera de dentro; senhas, cópia do cabeçalho e LUKS2 novo."],
+          ["disco", "LVM e RAID", "Volumes lógicos e RAID por software aparecem como discos: recuperar, verificar, formatar."],
+          ["saude", "S.M.A.R.T. nativo", "NVMe, SATA e USB direto pelo kernel, sem programa externo."],
+          ["apagar", "Apagamento seguro", "TRIM do SSD inteiro ou o apagamento do fabricante (NVMe Format, ATA Secure Erase)."],
+          ["migrar", "Migrar o sistema", "O Linux inteiro para outro disco, com UUIDs novos, fstab e GRUB corrigidos — liga de primeira."],
+          ["reparar", "Reparar a inicialização", "Refaz o initramfs e reinstala o GRUB (UEFI ou BIOS) ou o systemd-boot."],
+          ["boot", "Pendrive do Windows", "Grava o ISO do Windows num pendrive de instalação, direto do Linux."],
+        ],
+        en: [
+          ["resgate", "ext4, XFS and Btrfs", "Deleted files back on NTFS, FAT and exFAT too — read from the sectors, even on volumes that won't mount."],
+          ["particao", "Partitions like GParted", "ext4, XFS, Btrfs, F2FS, NTFS, exFAT, FAT and swap; / grows while mounted and lost partitions come back."],
+          ["chave", "LUKS and BitLocker", "Unlock, mount and recover from inside; passphrases, header backups and new LUKS2."],
+          ["disco", "LVM and RAID", "Logical volumes and software RAID show up as disks: recover, check, format."],
+          ["saude", "Native S.M.A.R.T.", "NVMe, SATA and USB straight through the kernel, no external tools."],
+          ["apagar", "Secure erase", "Whole-SSD TRIM or the manufacturer's erase (NVMe Format, ATA Secure Erase)."],
+          ["migrar", "Migrate the system", "Your whole Linux to another disk, with new UUIDs and fstab and GRUB fixed — boots first time."],
+          ["reparar", "Repair boot", "Rebuilds the initramfs and reinstalls GRUB (UEFI or BIOS) or systemd-boot."],
+          ["boot", "Windows USB installer", "Writes a Windows ISO to a bootable installer USB drive, right from Linux."],
+        ],
+      },
+    },
     gratisPro: {
       gratis: {
         pt: ["Criar, formatar, mover e redimensionar partições", "Saúde, superfície, benchmark e duplicados", "Procurar e pré-visualizar apagados", "Recuperar até 1 GB", "Criar imagem de disco"],
@@ -313,34 +346,78 @@ window.PRODUTOS = [
     },
     specs: {
       pt: [
-        ["Sistema", "Windows 10 e 11, 64 bits (x64)"],
-        ["Sistemas de arquivos", "NTFS, FAT12/16/32, exFAT, ext2/3/4, HFS+/HFSX, APFS, ReFS (detecção)"],
+        ["Windows", "Windows 10 e 11, 64 bits (x64)"],
+        ["Linux", "x64 e ARM64 — Ubuntu, Debian, Mint, Fedora, openSUSE, Arch e as demais (AppImage); Raspberry Pi 4/5 com sistema de 64 bits"],
+        ["Sistemas de arquivos", "NTFS, FAT12/16/32, exFAT, ext2/3/4, HFS+/HFSX, APFS, ReFS (detecção); no Linux também XFS, Btrfs e F2FS"],
         ["Tabelas", "MBR e GPT"],
+        ["Criptografia", "BitLocker; no Linux também LUKS1 e LUKS2"],
         ["Formatos por conteúdo", "JPEG, PNG, HEIC, RAW de câmera, MP4/MOV, MKV, AVI, MP3, WAV, PDF, Office, ZIP, RAR, 7z, SQLite e mais"],
         ["Saúde", "S.M.A.R.T. para SATA e NVMe"],
         ["Interface", "Avalonia / .NET 10, sem dependências para instalar"],
         ["Idioma", "Português"],
-        ["Instalação", "Instalador (atualiza por cima) ou portátil, para levar no pendrive"],
-        ["Licença", "Chave LibertyX conferida no próprio PC, sem internet"],
+        ["Instalação", "Windows: instalador (atualiza por cima) ou portátil, para levar no pendrive. Linux: AppImage, .deb, .rpm ou .tar.gz"],
+        ["Licença", "Chave LibertyX conferida no próprio PC, sem internet — a mesma no Windows e no Linux"],
         ["Código", `<a href="${GH}/libertyx-partition">github.com/fxmx182/libertyx-partition</a>`],
       ],
       en: [
-        ["System", "Windows 10 and 11, 64-bit (x64)"],
-        ["File systems", "NTFS, FAT12/16/32, exFAT, ext2/3/4, HFS+/HFSX, APFS, ReFS (detection)"],
+        ["Windows", "Windows 10 and 11, 64-bit (x64)"],
+        ["Linux", "x64 and ARM64 — Ubuntu, Debian, Mint, Fedora, openSUSE, Arch and everything else (AppImage); Raspberry Pi 4/5 with a 64-bit OS"],
+        ["File systems", "NTFS, FAT12/16/32, exFAT, ext2/3/4, HFS+/HFSX, APFS, ReFS (detection); on Linux also XFS, Btrfs and F2FS"],
         ["Partition tables", "MBR and GPT"],
+        ["Encryption", "BitLocker; on Linux also LUKS1 and LUKS2"],
         ["Content formats", "JPEG, PNG, HEIC, camera RAW, MP4/MOV, MKV, AVI, MP3, WAV, PDF, Office, ZIP, RAR, 7z, SQLite and more"],
         ["Health", "S.M.A.R.T. for SATA and NVMe"],
         ["Interface", "Avalonia / .NET 10, nothing else to install"],
         ["Language", "Portuguese"],
-        ["Install", "Installer (updates in place) or portable, to carry on a USB drive"],
-        ["License", "LibertyX key checked on your PC, offline"],
+        ["Install", "Windows: installer (updates in place) or portable, to carry on a USB drive. Linux: AppImage, .deb, .rpm or .tar.gz"],
+        ["License", "LibertyX key checked on your PC, offline — the same on Windows and Linux"],
         ["Source", `<a href="${GH}/libertyx-partition">github.com/fxmx182/libertyx-partition</a>`],
       ],
     },
-    downloads: [
-      { nome: { pt: "Instalador", en: "Installer" }, detalhe: { pt: "Recomendado — Menu Iniciar e atualizações", en: "Recommended — Start menu and updates" }, arquivo: "LibertyXPartition-Setup.exe", tamanho: "42 MB", icone: "windows", principal: true },
-      { nome: { pt: "Portátil", en: "Portable" }, detalhe: { pt: "Roda sem instalar, bom para pendrive", en: "Runs without installing, great on a USB drive" }, arquivo: "LibertyXPartition.exe", tamanho: "47 MB", icone: "pendrive" },
+    grupos: [
+      { id: "windows", titulo: "Windows", icone: "windows", texto: { pt: "Windows 10 e 11, 64 bits.", en: "Windows 10 and 11, 64-bit." } },
+      { id: "linux", titulo: { pt: "Linux · x64", en: "Linux · x64" }, icone: "linux", tag: "linux-latest",
+        texto: { pt: "PCs e notebooks com Intel ou AMD. Os quatro trazem o mesmo programa — muda só o jeito de instalar.", en: "PCs and laptops with Intel or AMD. All four carry the same program — only the way you install it changes." } },
+      { id: "arm64", titulo: { pt: "Linux · ARM64", en: "Linux · ARM64" }, icone: "linux", tag: "linux-latest",
+        texto: { pt: "Raspberry Pi 4 e 5 com sistema de 64 bits, notebooks e placas ARM.", en: "Raspberry Pi 4 and 5 with a 64-bit OS, ARM laptops and boards." } },
     ],
+    downloads: [
+      { grupo: "windows", nome: { pt: "Instalador", en: "Installer" }, detalhe: { pt: "Recomendado — Menu Iniciar e atualizações", en: "Recommended — Start menu and updates" }, arquivo: "LibertyXPartition-Setup.exe", tamanho: "42 MB", icone: "windows", principal: true },
+      { grupo: "windows", nome: { pt: "Portátil", en: "Portable" }, detalhe: { pt: "Roda sem instalar, bom para pendrive", en: "Runs without installing, great on a USB drive" }, arquivo: "LibertyXPartition.exe", tamanho: "47 MB", icone: "pendrive" },
+      { grupo: "linux", nome: "AppImage", detalhe: { pt: "Qualquer distribuição, sem instalar — atualiza sozinho", en: "Any distribution, no install — updates itself" }, arquivo: "LibertyXPartition-x86_64.AppImage", tamanho: "55 MB", icone: "linux", principal: true },
+      { grupo: "linux", nome: ".deb", detalhe: "Ubuntu · Debian · Mint · Pop!_OS", arquivo: "libertyx-partition_amd64.deb", tamanho: "53 MB", icone: "disco" },
+      { grupo: "linux", nome: ".rpm", detalhe: "Fedora · openSUSE · RHEL", arquivo: "libertyx-partition.x86_64.rpm", tamanho: "54 MB", icone: "disco" },
+      { grupo: "linux", nome: ".tar.gz", detalhe: { pt: "O programa solto, para quem prefere", en: "The bare program, for those who prefer it" }, arquivo: "LibertyXPartition-linux.tar.gz", tamanho: "54 MB", icone: "pc" },
+      { grupo: "arm64", nome: "AppImage", detalhe: { pt: "Qualquer distribuição ARM64, sem instalar", en: "Any ARM64 distribution, no install" }, arquivo: "LibertyXPartition-aarch64.AppImage", tamanho: "53 MB", icone: "linux" },
+      { grupo: "arm64", nome: ".deb", detalhe: "Raspberry Pi OS · Ubuntu · Debian", arquivo: "libertyx-partition_arm64.deb", tamanho: "50 MB", icone: "disco" },
+      { grupo: "arm64", nome: ".rpm", detalhe: "Fedora · openSUSE", arquivo: "libertyx-partition.aarch64.rpm", tamanho: "52 MB", icone: "disco" },
+      { grupo: "arm64", nome: ".tar.gz", detalhe: { pt: "O programa solto", en: "The bare program" }, arquivo: "LibertyXPartition-linux-arm64.tar.gz", tamanho: "52 MB", icone: "pc" },
+    ],
+    // quadro "Qual pacote escolher", depois dos downloads (os passos aceitam <b> e <code>)
+    guiaBaixar: {
+      titulo: { pt: "Qual pacote escolher no Linux", en: "Which Linux package to pick" },
+      texto: {
+        pt: "Todos trazem o .NET embutido, não pedem nada a mais. Na dúvida, o <b>AppImage</b> roda em qualquer distribuição. Para saber se a máquina é x64 (<code>x86_64</code>) ou ARM64 (<code>aarch64</code>), rode no terminal:",
+        en: "All of them ship with .NET built in and need nothing else. When in doubt, the <b>AppImage</b> runs on any distribution. To tell whether your machine is x64 (<code>x86_64</code>) or ARM64 (<code>aarch64</code>), run in a terminal:",
+      },
+      comando: "uname -m",
+      passos: {
+        pt: [
+          "<b>Ubuntu, Debian, Mint, Pop!_OS, Zorin</b> — o <b>.deb</b>: dois cliques nele, ou <code>sudo apt install ./libertyx-partition_amd64.deb</code>.",
+          "<b>Fedora, openSUSE, RHEL, Rocky, Alma</b> — o <b>.rpm</b>: <code>sudo dnf install ./libertyx-partition.x86_64.rpm</code> (no openSUSE, <code>sudo zypper install</code>).",
+          "<b>Arch, Manjaro e as demais</b> — o <b>AppImage</b>: <code>chmod +x LibertyXPartition-x86_64.AppImage</code> e dois cliques. Ele entra no menu de aplicativos e se atualiza sozinho.",
+          "<b>Raspberry Pi e ARM</b> — os mesmos pacotes da faixa ARM64, num sistema de 64 bits.",
+          "Ao abrir, o app pede a senha de administrador numa janela do sistema. Se faltar alguma ferramenta (cryptsetup, xfsprogs…), ele mesmo instala pelo gerenciador de pacotes.",
+        ],
+        en: [
+          "<b>Ubuntu, Debian, Mint, Pop!_OS, Zorin</b> — the <b>.deb</b>: double-click it, or <code>sudo apt install ./libertyx-partition_amd64.deb</code>.",
+          "<b>Fedora, openSUSE, RHEL, Rocky, Alma</b> — the <b>.rpm</b>: <code>sudo dnf install ./libertyx-partition.x86_64.rpm</code> (on openSUSE, <code>sudo zypper install</code>).",
+          "<b>Arch, Manjaro and everything else</b> — the <b>AppImage</b>: <code>chmod +x LibertyXPartition-x86_64.AppImage</code> and double-click. It adds itself to the app menu and updates itself.",
+          "<b>Raspberry Pi and ARM</b> — the same packages from the ARM64 row, on a 64-bit OS.",
+          "On launch the app asks for the administrator password in a system dialog. If a tool is missing (cryptsetup, xfsprogs…), it installs it through your package manager.",
+        ],
+      },
+    },
     lojas: [
       { loja: "cartao", url: null, nota: { pt: "Premium com cartão", en: "Premium by card" } },
     ],

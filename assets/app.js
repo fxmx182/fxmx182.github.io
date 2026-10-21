@@ -19,7 +19,7 @@
     pt: {
       htmlLang: "pt-BR", locale: "pt-BR", moeda: "US$", moedaTexto: (n) => `US$ ${n}`,
       tituloInicio: "LibertyX — apps sem anúncio, sem conta",
-      descricao: "LibertyX Player, Folder e Partition — apps independentes, sem anúncio e sem conta, para Android, TV e Windows.",
+      descricao: "LibertyX Player, Folder e Partition — apps independentes, sem anúncio e sem conta, para Android, TV, Windows e Linux.",
       navApps: "Apps", navComprar: "Como comprar", navLoja: "Loja", idioma: "Idioma",
       abas: { visao: "Visão geral", recursos: "Recursos", specs: "Especificações", baixar: "Baixar", preco: "Preço" },
       slugs: { visao: "visao", recursos: "recursos", specs: "specs", baixar: "baixar", preco: "preco", comprar: "comprar" },
@@ -79,7 +79,7 @@
     en: {
       htmlLang: "en", locale: "en-US", moeda: "$", moedaTexto: (n) => `$${n}`,
       tituloInicio: "LibertyX — no ads, no account",
-      descricao: "LibertyX Player, Folder and Partition — independent apps with no ads and no account, for Android, TV and Windows.",
+      descricao: "LibertyX Player, Folder and Partition — independent apps with no ads and no account, for Android, TV, Windows and Linux.",
       navApps: "Apps", navComprar: "How to buy", navLoja: "Store", idioma: "Language",
       abas: { visao: "Overview", recursos: "Features", specs: "Specs", baixar: "Download", preco: "Pricing" },
       slugs: { visao: "overview", recursos: "features", specs: "specs", baixar: "download", preco: "pricing", comprar: "buy" },
@@ -161,34 +161,39 @@
   if (ESTATICO) document.documentElement.classList.add("estatico");
   const lazy = ESTATICO ? "" : ' loading="lazy"';
 
-  const urlArquivo = (p, arquivo) =>
-    p.tag === "latest-release"
+  // cada download sai do release do seu grupo (o Linux do Partition mora em "linux-latest")
+  const tagDe = (p, d) => p.grupos?.find((g) => g.id === d.grupo)?.tag || p.tag;
+  const urlArquivo = (p, arquivo, tag = p.tag) =>
+    tag === "latest-release"
       ? `${GH}/${p.repo}/releases/latest/download/${arquivo}`
-      : `${GH}/${p.repo}/releases/download/${p.tag}/${arquivo}`;
+      : `${GH}/${p.repo}/releases/download/${tag}/${arquivo}`;
 
   // ---------- dados ao vivo do GitHub (versão, data e tamanho) ----------
 
   const cacheRelease = new Map();
-  function release(p) {
-    if (cacheRelease.has(p.repo)) return cacheRelease.get(p.repo);
-    const chave = `lx-rel-${p.repo}`;
+  function release(repo, tag) {
+    const id = `${repo}@${tag}`;
+    if (cacheRelease.has(id)) return cacheRelease.get(id);
+    const chave = `lx-rel-${id}`;
     try {
       const s = JSON.parse(sessionStorage.getItem(chave) || "null");
       if (s && Date.now() - s.t < 30 * 60 * 1000) {
         const pr = Promise.resolve(s.d);
-        cacheRelease.set(p.repo, pr);
+        cacheRelease.set(id, pr);
         return pr;
       }
     } catch (_) { /* sem armazenamento: busca de novo */ }
-    const api = p.tag === "latest-release"
-      ? `https://api.github.com/repos/fxmx182/${p.repo}/releases/latest`
-      : `https://api.github.com/repos/fxmx182/${p.repo}/releases/tags/${p.tag}`;
+    const api = tag === "latest-release"
+      ? `https://api.github.com/repos/fxmx182/${repo}/releases/latest`
+      : `https://api.github.com/repos/fxmx182/${repo}/releases/tags/${tag}`;
     const pr = fetch(api, { headers: { Accept: "application/vnd.github+json" } })
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (!j) return null;
         const d = {
           tag: j.tag_name,
+          // etiqueta fixa ("latest", "linux-latest"): o número vem do texto do release ("Versão 1.0.4 …")
+          versao: (j.tag_name.match(/^v?(\d+\.\d+(?:\.\d+)?)/) || (j.body || "").match(/Vers[ãa]o (\d+\.\d+(?:\.\d+)?)/) || [])[1],
           data: j.published_at,
           assets: Object.fromEntries((j.assets || []).map((a) => [a.name, a.size])),
         };
@@ -196,7 +201,7 @@
         return d;
       })
       .catch(() => null);
-    cacheRelease.set(p.repo, pr);
+    cacheRelease.set(id, pr);
     return pr;
   }
 
@@ -209,19 +214,18 @@
     new Date(iso).toLocaleDateString(L.locale, { day: "numeric", month: "short", year: "numeric" }).replace(".", "");
 
   function aplicarRelease(p) {
-    release(p).then((d) => {
+    const tags = [...new Set(p.downloads.map((d) => tagDe(p, d)))];
+    tags.forEach((tag) => release(p.repo, tag).then((d) => {
       if (!d) return;
       document.querySelectorAll("[data-arquivo]").forEach((el) => {
         const n = d.assets[el.dataset.arquivo];
         if (n) el.textContent = tamanho(n);
       });
-      const v = document.querySelector(`[data-versao="${p.id}"]`);
-      if (v) {
-        const num = (d.tag.match(/^v?(\d+\.\d+(?:\.\d+)?)/) || [])[1];
-        v.innerHTML = `${ic("ok")} ${L.versao(num && esc(num), esc(dataBonita(d.data)))} · <a href="${GH}/${p.repo}/releases" ${externo}>${L.historico}</a>`;
+      document.querySelectorAll(`[data-versao="${p.id}"][data-tag="${tag}"]`).forEach((v) => {
+        v.innerHTML = `${ic("ok")} ${L.versao(d.versao && esc(d.versao), esc(dataBonita(d.data)))} · <a href="${GH}/${p.repo}/releases" ${externo}>${L.historico}</a>`;
         v.hidden = false;
-      }
-    });
+      });
+    }));
   }
 
   // ---------- partes fixas da página (topo, rodapé, lupa) ----------
@@ -279,6 +283,42 @@
       <div class="cartao-tela"><img src="${t(p.capa || p.destaque)}" alt=""></div>
       <span class="cartao-ir">${ic("seta")}</span>
     </a>`;
+
+  const recursosGrade = (itens) => `
+    <div class="recursos">
+      ${itens.map(([i, ti, d]) => `
+        <article class="recurso vidro surge">
+          <span class="canal-icone">${ic(i)}</span>
+          <h3>${esc(ti)}</h3>
+          <p>${esc(d)}</p>
+        </article>`).join("")}
+    </div>`;
+
+  const arquivo = (p, d) => `
+    <a class="arquivo vidro${d.principal ? " principal" : ""}" href="${urlArquivo(p, d.arquivo, tagDe(p, d))}">
+      <span class="canal-icone">${ic(d.icone)}</span>
+      <div>
+        <h3>${esc(t(d.nome))}${d.principal ? `<span class="principal-selo">${L.recomendado}</span>` : ""}</h3>
+        <p>${esc(t(d.detalhe))}</p>
+        <code>${esc(d.arquivo)}</code>
+      </div>
+      <span class="arquivo-baixar">${ic("download")} <span data-arquivo="${esc(d.arquivo)}">${esc(tamanhoFixo(d.tamanho))}</span></span>
+    </a>`;
+
+  const linhaVersao = (p, tag) => `<p class="versao" data-versao="${p.id}" data-tag="${tag}" hidden></p>`;
+
+  // sem `grupos`, uma grade só; com eles, um bloco por grupo, cada um com a versão do seu release
+  const downloads = (p) =>
+    p.grupos
+      ? p.grupos.map((g) => `
+          <section class="grupo" id="baixar-${g.id}">
+            <h3 class="grupo-titulo">${ic(g.icone)} ${esc(t(g.titulo))}</h3>
+            ${g.texto ? `<p class="grupo-texto">${esc(t(g.texto))}</p>` : ""}
+            <div class="baixar-grade">${p.downloads.filter((d) => d.grupo === g.id).map((d) => arquivo(p, d)).join("")}</div>
+            ${g.id === p.grupos.findLast((o) => (o.tag || p.tag) === (g.tag || p.tag)).id ? linhaVersao(p, g.tag || p.tag) : ""}
+          </section>`).join("")
+      : `<div class="baixar-grade">${p.downloads.map((d) => arquivo(p, d)).join("")}</div>
+         ${linhaVersao(p, p.tag)}`;
 
   const canal = (icone, [titulo, texto, itens], aberto, extra = "") => `
     <article class="canal vidro surge${aberto ? " canal-destaque" : ""}">
@@ -366,14 +406,11 @@
         return `
           <h2>${L.recursosTitulo}</h2>
           <p class="lead">${esc(t(p.slogan))}</p>
-          <div class="recursos">
-            ${t(p.recursos).map(([i, ti, d]) => `
-              <article class="recurso vidro surge">
-                <span class="canal-icone">${ic(i)}</span>
-                <h3>${esc(ti)}</h3>
-                <p>${esc(d)}</p>
-              </article>`).join("")}
-          </div>`;
+          ${recursosGrade(t(p.recursos))}
+          ${p.recursosExtra ? `
+          <h2 class="recursos-extra">${esc(t(p.recursosExtra.titulo))}</h2>
+          <p class="lead">${esc(t(p.recursosExtra.texto))}</p>
+          ${recursosGrade(t(p.recursosExtra.itens))}` : ""}`;
 
       case "specs":
         return `
@@ -390,19 +427,21 @@
         return `
           <h2>${L.baixarTitulo}</h2>
           <p class="lead">${L.baixarTexto}</p>
-          <div class="baixar-grade">
-            ${p.downloads.map((d) => `
-              <a class="arquivo vidro${d.principal ? " principal" : ""}" href="${urlArquivo(p, d.arquivo)}">
-                <span class="canal-icone">${ic(d.icone)}</span>
-                <div>
-                  <h3>${esc(t(d.nome))}${d.principal ? `<span class="principal-selo">${L.recomendado}</span>` : ""}</h3>
-                  <p>${esc(t(d.detalhe))}</p>
-                  <code>${esc(d.arquivo)}</code>
-                </div>
-                <span class="arquivo-baixar">${ic("download")} <span data-arquivo="${esc(d.arquivo)}">${esc(tamanhoFixo(d.tamanho))}</span></span>
-              </a>`).join("")}
-          </div>
-          <p class="versao" data-versao="${p.id}" hidden></p>
+          ${downloads(p)}
+
+          ${p.guiaBaixar ? `
+          <section class="instalar vidro">
+            <div>
+              <h3>${esc(t(p.guiaBaixar.titulo))}</h3>
+              <p class="lead" style="font-size:15.5px">${t(p.guiaBaixar.texto)}</p>
+              ${p.guiaBaixar.comando ? `
+              <div class="endereco">
+                <code>${esc(p.guiaBaixar.comando)}</code>
+                <button class="copiar" data-copiar="${esc(p.guiaBaixar.comando)}">${ic("copiar")} ${L.copiar}</button>
+              </div>` : ""}
+            </div>
+            <ol>${t(p.guiaBaixar.passos).map((x) => `<li><span>${x}</span></li>`).join("")}</ol>
+          </section>` : ""}
 
           <h3 class="subtitulo">${L.lojas}</h3>
           <div class="lojas">

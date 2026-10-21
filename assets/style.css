@@ -351,6 +351,16 @@ button { font: inherit; color: inherit; }
 .versao { margin-top: 14px; color: var(--texto-3); font-size: 13.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .versao b { color: var(--texto-2); font-weight: 700; }
 
+.grupo + .grupo { margin-top: 44px; }
+.grupo-titulo { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font-size: 20px; letter-spacing: -.02em; }
+.grupo-titulo .i { width: 22px; height: 22px; color: var(--ouro); }
+.grupo-texto { margin: 0 0 16px; color: var(--texto-2); font-size: 15px; }
+.painel h2.recursos-extra { margin-top: 72px; }
+.instalar li code, .instalar .lead code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; color: var(--ouro-claro);
+  background: rgba(0, 0, 0, .35); padding: 1px 6px; border-radius: 6px; overflow-wrap: anywhere;
+}
+
 .subtitulo { margin: 52px 0 16px; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--texto-3); font-weight: 800; }
 .lojas { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
 .loja {
