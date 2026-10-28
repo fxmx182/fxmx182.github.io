@@ -166,7 +166,7 @@ window.PRODUTOS = [
     },
     lojas: [
       { loja: "play", url: null },
-      { loja: "amazon", url: null, nota: "Fire TV" },
+      { loja: "amazon", url: "https://www.amazon.com/dp/B0HNNXC4JG", nota: { pt: "Fire TV e tablet Fire", en: "Fire TV and Fire tablet" } },
       { loja: "appstore", url: null, nota: "iPhone" },
     ],
     telegram: `${BOT}?start=player`,
@@ -274,7 +274,7 @@ window.PRODUTOS = [
     ],
     lojas: [
       { loja: "play", url: null, nota: { pt: "celular e TV", en: "phone and TV" } },
-      { loja: "amazon", url: null, nota: "Fire TV" },
+      { loja: "amazon", url: "https://www.amazon.com/dp/B0HNK9HVTW", nota: { pt: "Fire TV e tablet Fire", en: "Fire TV and Fire tablet" } },
     ],
     telegram: `${BOT}?start=folder`,
     instalarTv: true,
