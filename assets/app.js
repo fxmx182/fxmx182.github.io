@@ -161,12 +161,15 @@
   if (ESTATICO) document.documentElement.classList.add("estatico");
   const lazy = ESTATICO ? "" : ' loading="lazy"';
 
-  // cada download sai do release do seu grupo (o Linux do Partition mora em "linux-latest")
-  const tagDe = (p, d) => p.grupos?.find((g) => g.id === d.grupo)?.tag || p.tag;
-  const urlArquivo = (p, arquivo, tag = p.tag) =>
+  // cada download sai do release do seu grupo: o Linux do Partition mora na etiqueta "linux-latest",
+  // o do Player num repositório próprio (o grupo diz `repo` e/ou `tag`; sem eles, os do produto)
+  const grupoDe = (p, d) => p.grupos?.find((g) => g.id === d.grupo);
+  const tagDe = (p, d) => grupoDe(p, d)?.tag || p.tag;
+  const repoDe = (p, d) => grupoDe(p, d)?.repo || p.repo;
+  const urlArquivo = (p, arquivo, tag = p.tag, repo = p.repo) =>
     tag === "latest-release"
-      ? `${GH}/${p.repo}/releases/latest/download/${arquivo}`
-      : `${GH}/${p.repo}/releases/download/${tag}/${arquivo}`;
+      ? `${GH}/${repo}/releases/latest/download/${arquivo}`
+      : `${GH}/${repo}/releases/download/${tag}/${arquivo}`;
 
   // ---------- dados ao vivo do GitHub (versão, data e tamanho) ----------
 
@@ -214,18 +217,21 @@
     new Date(iso).toLocaleDateString(L.locale, { day: "numeric", month: "short", year: "numeric" }).replace(".", "");
 
   function aplicarRelease(p) {
-    const tags = [...new Set(p.downloads.map((d) => tagDe(p, d)))];
-    tags.forEach((tag) => release(p.repo, tag).then((d) => {
-      if (!d) return;
-      document.querySelectorAll("[data-arquivo]").forEach((el) => {
-        const n = d.assets[el.dataset.arquivo];
-        if (n) el.textContent = tamanho(n);
+    const origens = [...new Set(p.downloads.map((d) => `${repoDe(p, d)}@${tagDe(p, d)}`))];
+    origens.forEach((o) => {
+      const [repo, tag] = o.split("@");
+      release(repo, tag).then((d) => {
+        if (!d) return;
+        document.querySelectorAll("[data-arquivo]").forEach((el) => {
+          const n = d.assets[el.dataset.arquivo];
+          if (n) el.textContent = tamanho(n);
+        });
+        document.querySelectorAll(`[data-versao="${p.id}"][data-tag="${tag}"][data-repo="${repo}"]`).forEach((v) => {
+          v.innerHTML = `${ic("ok")} ${L.versao(d.versao && esc(d.versao), esc(dataBonita(d.data)))} · <a href="${GH}/${repo}/releases" ${externo}>${L.historico}</a>`;
+          v.hidden = false;
+        });
       });
-      document.querySelectorAll(`[data-versao="${p.id}"][data-tag="${tag}"]`).forEach((v) => {
-        v.innerHTML = `${ic("ok")} ${L.versao(d.versao && esc(d.versao), esc(dataBonita(d.data)))} · <a href="${GH}/${p.repo}/releases" ${externo}>${L.historico}</a>`;
-        v.hidden = false;
-      });
-    }));
+    });
   }
 
   // ---------- partes fixas da página (topo, rodapé, lupa) ----------
@@ -295,7 +301,7 @@
     </div>`;
 
   const arquivo = (p, d) => `
-    <a class="arquivo vidro${d.principal ? " principal" : ""}" href="${urlArquivo(p, d.arquivo, tagDe(p, d))}">
+    <a class="arquivo vidro${d.principal ? " principal" : ""}" href="${urlArquivo(p, d.arquivo, tagDe(p, d), repoDe(p, d))}">
       <span class="canal-icone">${ic(d.icone)}</span>
       <div>
         <h3>${esc(t(d.nome))}${d.principal ? `<span class="principal-selo">${L.recomendado}</span>` : ""}</h3>
@@ -305,7 +311,7 @@
       <span class="arquivo-baixar">${ic("download")} <span data-arquivo="${esc(d.arquivo)}">${esc(tamanhoFixo(d.tamanho))}</span></span>
     </a>`;
 
-  const linhaVersao = (p, tag) => `<p class="versao" data-versao="${p.id}" data-tag="${tag}" hidden></p>`;
+  const linhaVersao = (p, tag, repo = p.repo) => `<p class="versao" data-versao="${p.id}" data-tag="${tag}" data-repo="${repo}" hidden></p>`;
 
   // sem `grupos`, uma grade só; com eles, um bloco por grupo, cada um com a versão do seu release
   const downloads = (p) =>
@@ -315,7 +321,7 @@
             <h3 class="grupo-titulo">${ic(g.icone)} ${esc(t(g.titulo))}</h3>
             ${g.texto ? `<p class="grupo-texto">${esc(t(g.texto))}</p>` : ""}
             <div class="baixar-grade">${p.downloads.filter((d) => d.grupo === g.id).map((d) => arquivo(p, d)).join("")}</div>
-            ${g.id === p.grupos.findLast((o) => (o.tag || p.tag) === (g.tag || p.tag)).id ? linhaVersao(p, g.tag || p.tag) : ""}
+            ${g.id === p.grupos.findLast((o) => (o.tag || p.tag) === (g.tag || p.tag) && (o.repo || p.repo) === (g.repo || p.repo)).id ? linhaVersao(p, g.tag || p.tag, g.repo || p.repo) : ""}
           </section>`).join("")
       : `<div class="baixar-grade">${p.downloads.map((d) => arquivo(p, d)).join("")}</div>
          ${linhaVersao(p, p.tag)}`;
