@@ -432,7 +432,19 @@
         const tv = p.downloads.find((d) => d.icone === "tv");
         return `
           <h2>${L.baixarTitulo}</h2>
-          <p class="lead">${L.baixarTexto}</p>
+          <h3 class="subtitulo subtitulo-topo">${L.lojas}</h3>
+          <div class="lojas">
+            ${p.lojas.map((l) => {
+              const nome = L.lojasNome[l.loja];
+              const nota = l.nota ? ` · ${esc(t(l.nota))}` : "";
+              return l.url
+                ? `<a class="loja" href="${esc(l.url)}" ${externo}>${ic(LOJA_ICONE[l.loja])}<div><small>${L.disponivel}${nota}</small><strong>${nome}</strong></div>${ic("seta")}</a>`
+                : `<div class="loja breve">${ic(LOJA_ICONE[l.loja])}<div><small>${L.emBreve}${nota}</small><strong>${nome}</strong></div></div>`;
+            }).join("")}
+            <a class="loja" href="${p.telegram}" ${externo}>${ic("telegram")}<div><small>${L.chaveTg[0]}</small><strong>${L.chaveTg[1]}</strong></div>${ic("seta")}</a>
+          </div>
+
+          <p class="lead baixar-lead">${L.baixarTexto}</p>
           ${downloads(p)}
 
           ${p.guiaBaixar ? `
@@ -448,18 +460,6 @@
             </div>
             <ol>${t(p.guiaBaixar.passos).map((x) => `<li><span>${x}</span></li>`).join("")}</ol>
           </section>` : ""}
-
-          <h3 class="subtitulo">${L.lojas}</h3>
-          <div class="lojas">
-            ${p.lojas.map((l) => {
-              const nome = L.lojasNome[l.loja];
-              const nota = l.nota ? ` · ${esc(t(l.nota))}` : "";
-              return l.url
-                ? `<a class="loja" href="${esc(l.url)}" ${externo}>${ic(LOJA_ICONE[l.loja])}<div><small>${L.disponivel}${nota}</small><strong>${nome}</strong></div>${ic("seta")}</a>`
-                : `<div class="loja breve">${ic(LOJA_ICONE[l.loja])}<div><small>${L.emBreve}${nota}</small><strong>${nome}</strong></div></div>`;
-            }).join("")}
-            <a class="loja" href="${p.telegram}" ${externo}>${ic("telegram")}<div><small>${L.chaveTg[0]}</small><strong>${L.chaveTg[1]}</strong></div>${ic("seta")}</a>
-          </div>
 
           ${tv && p.instalarTv ? `
           <section class="instalar vidro">

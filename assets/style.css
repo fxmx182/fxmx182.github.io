@@ -363,6 +363,8 @@ button { font: inherit; color: inherit; }
 
 .subtitulo { margin: 52px 0 16px; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--texto-3); font-weight: 800; }
 .lojas { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.subtitulo-topo { margin-top: 26px; }
+.baixar-lead { margin: 44px 0 28px; }
 .loja {
   display: flex; align-items: center; gap: 14px; padding: 16px 18px; text-decoration: none;
   border-radius: 18px; border: 1px solid var(--borda); background: rgba(255, 255, 255, .035); transition: border-color .3s, background .3s;
