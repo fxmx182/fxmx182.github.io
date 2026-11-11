@@ -68,7 +68,7 @@
       notaApps: "<b>Pelo APK daqui</b>, o Pro se compra com a chave do Telegram. <b>Na Amazon</b> (e na Google Play, quando abrir), o Pro é comprado dentro do app, pela própria loja.",
       notaPacote: (url, preco) => `Quer todos os apps? O <a href="${url}" target="_blank" rel="noopener" style="color:var(--ouro)">pacote completo</a> sai por ${preco}.`,
       ampliar: "Ampliar", fechar: "Fechar", anterior: "Anterior", proxima: "Próxima",
-      lojasNome: { play: "Google Play", amazon: "Amazon Appstore", appstore: "App Store", cartao: "Cartão de crédito" },
+      lojasNome: { play: "Google Play", amazon: "Amazon Appstore", appstore: "App Store", testflight: "TestFlight", cartao: "Cartão de crédito" },
       rodape: {
         lema: "Apps independentes. Sem anúncio, sem conta, sem rastreamento.",
         apps: "Apps", loja: "Loja", codigo: "Código", comprar: "Como comprar", pacote: "Pacote completo",
@@ -128,7 +128,7 @@
       notaApps: "<b>With the APK from here</b>, Pro is bought with a Telegram key. <b>On Amazon</b> (and on Google Play, once it opens), Pro is bought inside the app, through the store itself.",
       notaPacote: (url, preco) => `Want every app? The <a href="${url}" target="_blank" rel="noopener" style="color:var(--ouro)">complete bundle</a> is ${preco}.`,
       ampliar: "Enlarge", fechar: "Close", anterior: "Previous", proxima: "Next",
-      lojasNome: { play: "Google Play", amazon: "Amazon Appstore", appstore: "App Store", cartao: "Credit card" },
+      lojasNome: { play: "Google Play", amazon: "Amazon Appstore", appstore: "App Store", testflight: "TestFlight", cartao: "Credit card" },
       rodape: {
         lema: "Independent apps. No ads, no account, no tracking.",
         apps: "Apps", loja: "Store", codigo: "Source", comprar: "How to buy", pacote: "Complete bundle",
@@ -138,7 +138,7 @@
   };
 
   const ABAS = ["visao", "recursos", "specs", "baixar", "preco"];
-  const LOJA_ICONE = { play: "play", amazon: "amazon", appstore: "apple", cartao: "cartao" };
+  const LOJA_ICONE = { play: "play", amazon: "amazon", appstore: "apple", testflight: "apple", cartao: "cartao" };
 
   // ---------- idioma ----------
 

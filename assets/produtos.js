@@ -31,7 +31,7 @@ window.PRODUTOS = [
       pt: "Player de vídeo no espírito do MX Player: abre qualquer formato, rola quadro a quadro e toca direto do servidor de casa — sem anúncio, sem conta.",
       en: "A video player in the spirit of MX Player: opens any format, scrubs frame by frame and plays straight from your home server — no ads, no account.",
     },
-    plataformas: ["Android", "Google TV", "Fire TV", "Windows", "Linux"],
+    plataformas: ["Android", "iPhone", "Google TV", "Fire TV", "Windows", "Linux"],
     destaque: { pt: "img/player-celular-player.webp", en: "img/player-celular-player-en.webp" },
     repo: "libertyx-player-android",
     tag: "latest-release", // o release mais recente marcado como "latest"
@@ -108,7 +108,7 @@ window.PRODUTOS = [
     },
     specs: {
       pt: [
-        ["Plataformas", "Android 7.0+ (celular e tablet), Google TV, Android TV, Fire TV, Nvidia Shield; Windows 10 e 11; Linux (Ubuntu, Debian, Mint, Fedora, openSUSE, Arch…)"],
+        ["Plataformas", "Android 7.0+ (celular e tablet), iPhone com iOS 17+ (TestFlight), Google TV, Android TV, Fire TV, Nvidia Shield; Windows 10 e 11; Linux (Ubuntu, Debian, Mint, Fedora, openSUSE, Arch…)"],
         ["Arquiteturas", "Android: arm64-v8a, armeabi-v7a (o APK da TV leva as duas), x86_64. Windows e Linux: x64 e ARM64"],
         ["Motor", "Android: libVLC. Windows e Linux: libmpv. Decodificação por hardware"],
         ["Vídeo", "MKV, MP4, AVI, TS, MOV, WebM, HEVC/H.265, H.264, VP9, AV1, HDR"],
@@ -120,7 +120,7 @@ window.PRODUTOS = [
         ["Código", `<a href="${GH}/libertyx-player-android">github.com/fxmx182/libertyx-player-android</a> · <a href="${GH}/libertyx-player-desktop">libertyx-player-desktop</a>`],
       ],
       en: [
-        ["Platforms", "Android 7.0+ (phone and tablet), Google TV, Android TV, Fire TV, Nvidia Shield; Windows 10 and 11; Linux (Ubuntu, Debian, Mint, Fedora, openSUSE, Arch…)"],
+        ["Platforms", "Android 7.0+ (phone and tablet), iPhone with iOS 17+ (TestFlight), Google TV, Android TV, Fire TV, Nvidia Shield; Windows 10 and 11; Linux (Ubuntu, Debian, Mint, Fedora, openSUSE, Arch…)"],
         ["Architectures", "Android: arm64-v8a, armeabi-v7a (the TV APK ships both), x86_64. Windows and Linux: x64 and ARM64"],
         ["Engine", "Android: libVLC. Windows and Linux: libmpv. Hardware decoding"],
         ["Video", "MKV, MP4, AVI, TS, MOV, WebM, HEVC/H.265, H.264, VP9, AV1, HDR"],
@@ -185,7 +185,7 @@ window.PRODUTOS = [
     lojas: [
       { loja: "play", url: null },
       { loja: "amazon", url: "https://www.amazon.com/dp/B0HNNXC4JG", nota: { pt: "Fire TV e tablet Fire", en: "Fire TV and Fire tablet" } },
-      { loja: "appstore", url: null, nota: "iPhone" },
+      { loja: "testflight", url: "https://testflight.apple.com/join/vhrP1E9j", nota: { pt: "iPhone, beta aberto", en: "iPhone, open beta" } },
     ],
     telegram: `${BOT}?start=player`,
     instalarTv: true,
